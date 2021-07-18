@@ -23,9 +23,9 @@ export class OrderService {
 
 
 
-  getSingleOrder(orderId: number){
+  getSingleOrder(orderId: number) {
 
-      return this.http.get<ProductResponseModel[]>(this.serverUrl + '/orders'+ orderId).toPromise();
+    return this.http.get<ProductResponseModel[]>(this.serverUrl + '/orders/' + orderId).toPromise();
 
 
   }
@@ -41,17 +41,17 @@ export class OrderService {
 interface ProductResponseModel {
 
 
-     id: number;
+  id: number;
 
-     title: string;
+  title: string;
 
-     description: string;
+  description: string;
 
-     price: number;
+  price: number;
 
-     quantityOrdered: number;
+  quantityOrdered: number;
 
-     image: string;
+  image: string;
 
 
 }

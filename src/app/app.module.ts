@@ -26,6 +26,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 //import { BrowserModule } from '@angular/platform-browser';
 import { ProductService } from './services/product.service';
+import { NgxSpinner } from 'ngx-spinner/lib/ngx-spinner.enum';
+import { NgxSpinnerModule } from 'ngx-spinner';
+import { ToastrModule } from 'ngx-toastr';
 //import { CartService } from './services/cart.service';
 //import { OrderService } from './services/order.service';
 
@@ -44,28 +47,28 @@ import { ProductService } from './services/product.service';
 
 const routes: Routes = [
   {
-      
-      path: '', component: HomeComponent
+
+    path: '', component: HomeComponent
   },
 
   {
 
-      path: 'product/:id', component: ProductComponent
+    path: 'product/:id', component: ProductComponent
   },
 
   {
 
-      path: 'cart', component: CartComponent
+    path: 'cart', component: CartComponent
   },
 
   {
 
-      path: 'checkout', component: CheckoutComponent
+    path: 'checkout', component: CheckoutComponent
   },
 
   {
 
-      path: 'thankyou', component: ThankyouComponent
+    path: 'thankyou', component: ThankyouComponent
   }
 
 ];
@@ -86,6 +89,7 @@ const routes: Routes = [
     HomeComponent,
     ProductComponent,
     ThankyouComponent
+
   ],
   imports: [
     BrowserModule,
@@ -96,6 +100,11 @@ const routes: Routes = [
     //FormsModule sy ReactiveFormsModule 
     HttpClientModule,
     RouterModule.forRoot(routes),
+
+    //il faut ajouter ceci apres installation de ngx-spinner ngx-toastr --save 
+    //NgxSpinner,
+    NgxSpinnerModule,
+    ToastrModule.forRoot()
 
   ],
   //providers: [ProductService,CartService,OrderService],

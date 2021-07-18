@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 //utiliser le service product dans home
 import { ProductService } from '../../services/product.service';
+import { CartService } from '../../services/cart.service';
 
 
 
@@ -10,6 +11,7 @@ import { ProductService } from '../../services/product.service';
 
 
 import { ProductModelServer, ServerResponse } from '../../models/product.model';
+import { Router } from '@angular/router';
 
 
 
@@ -34,7 +36,7 @@ export class HomeComponent implements OnInit {
 
 
   //constructor(private productService: ProductService, private router: Router) { }
-  constructor(private productService: ProductService) { }
+  constructor(private productService: ProductService, private router: Router, private cartService: CartService) { }
 
 
   /*
@@ -54,7 +56,7 @@ export class HomeComponent implements OnInit {
   */
 
 
-  ngOnInit(): void { 
+  ngOnInit(): void {
 
     //utiliser  subscribe:pour obtenir de l'information
     this.productService.getAllProducts(3).subscribe((prods: { count: number, products: any[] }) => {
@@ -73,15 +75,24 @@ export class HomeComponent implements OnInit {
 
 
 
-  /*
 
-  selectProduct(id: number){
 
-            this.router.navigate(['/product', id]).then();
+  selectProduct(id: number) {
+
+    this.router.navigate(['/product', id]).then();
 
 
 
   }
-  */
+
+
+
+  AddToCart(id: number) {
+
+
+    this.cartService.AddProductToCart(id);
+
+  }
+
 
 }

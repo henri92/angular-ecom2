@@ -9,6 +9,8 @@ import { CartModelPublic, CartModelServer } from '../models/cart.model';
 import { BehaviorSubject } from 'rxjs';
 import { Router, NavigationExtras } from '@angular/router';
 import { ProductModelServer } from '../models/product.model';
+import { ToastrService } from 'ngx-toastr';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 
 
@@ -78,7 +80,9 @@ export class CartService {
   constructor(private http: HttpClient,
     private productService: ProductService,
     private orderService: OrderService,
-    private router: Router) {
+    private router: Router,
+    private toast: ToastrService,
+    private spinner: NgxSpinnerService) {
 
     this.cartTotal$.next(this.cartDataServer.total);
 
@@ -202,7 +206,13 @@ export class CartService {
         this.cartData$.next({ ...this.cartDataServer });
 
         //TODO DISPLAY A TOAST NOTIFICATION
+        this.toast.success(`$(prod.name) added to the cart`, 'Product Added', {
+          timeOut: 1500,
+          progressBar: true,
+          progressAnimation: 'increasing',
+          positionClass: 'toast-top-right'
 
+        });
 
       }
 
@@ -232,20 +242,44 @@ export class CartService {
 
           } else {
 
-            this.cartDataServer.data[index].numInCart = this.cartDataServer.data[index].numInCart < prod.quantity ? this.cartDataServer.data[index].numInCart++ : prod.quantity;
+            // this.cartDataServer.data[index].numInCart = this.cartDataServer.data[index].numInCart < prod.quantity ? this.cartDataServer.data[index].numInCart++ : prod.quantity;
+            this.cartDataServer.data[index].numInCart < prod.quantity ? this.cartDataServer.data[index].numInCart++ : prod.quantity;
           }
 
 
 
 
           this.cartDataClient.prodData[index].incart = this.cartDataServer.data[index].numInCart;
+
+
+          //TODO CALCULATE TOTAL AMOUNT
+          this.CalculateTotal();
+
+          this.cartDataClient.total = this.cartDataServer.total;
+
+
+          //update localstorage
+          localStorage.setItem('cart', JSON.stringify(this.cartDataClient));
+
+
+
           //TODO DISPLAY A TOAST NOTIFICATION
+          this.toast.info(`$(prod.name) quantity updated in the cart`, 'Product updated', {
+            timeOut: 1500,
+            progressBar: true,
+            progressAnimation: 'increasing',
+            positionClass: 'toast-top-right'
+
+          });
+
+
+
 
 
 
         }//--end of if
 
-        //b- if that item is not in  the cart
+        //b- if that item is not in  the cart(if product is not in the cart array)
 
         else {
 
@@ -268,11 +302,24 @@ export class CartService {
 
 
 
+          //update localstorage
+          // localStorage.setItem('cart', JSON.stringify(this.cartDataClient));
+
+
 
           //TODO DISPLAY A TOAST NOTIFICATION
+          this.toast.success(`$(prod.name) added to the cart`, 'Product Added', {
+            timeOut: 1500,
+            progressBar: true,
+            progressAnimation: 'increasing',
+            positionClass: 'toast-top-right'
+
+          });
 
 
           //TODO CALCULATE TOTAL AMOUNT
+          this.CalculateTotal();
+
           this.cartDataClient.total = this.cartDataServer.total;
 
 
@@ -461,7 +508,7 @@ export class CartService {
 
 
 
-
+  //rest 20//ss
   CheckoutFromCart(userId: number) {
 
     this.http.post(`${this.serverURL}/orders/payment`, null).subscribe((res: { success: boolean }) => {
@@ -495,7 +542,11 @@ export class CartService {
 
 
 
-              //TODO HIDE SPINNER
+              //TODO HIDE SPINNER:
+              this.spinner.hide().then();
+
+
+
               this.router.navigate(['/thankyou'], NavigationExtras).then(p => {
 
                 this.cartDataClient = { total: 0, prodData: [{ incart: 0, id: 0 }] };
@@ -514,6 +565,21 @@ export class CartService {
 
           });
         });
+      } else {
+
+        this.spinner.hide().then();
+        this.router.navigateByUrl('/checkout').then();
+
+        this.toast.error(`Sorry,failed to book the order`, 'Order status', {
+
+          timeOut: 1500,
+          progressBar: true,
+          progressAnimation: 'increasing',
+          positionClass: 'toast-top-right'
+        });
+
+
+
       }
 
     });
@@ -542,6 +608,22 @@ export class CartService {
 
 
 
+
+
+  calculateSubTotal(index): number{
+
+    let subTotal =0;
+
+
+    const p= this.cartDataServer.data[index];
+
+    //@ts-ignore
+    subTotal = p.product.price * p.numInCart;
+
+
+    return subTotal;
+
+  }
 
 
   interface OrderResponse {

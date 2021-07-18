@@ -102,7 +102,7 @@ export class ProductService {
 
 
 
-    return this.http.get<ProductModelServer>(this.SERVER_URL + '/products' + id);
+    return this.http.get<ProductModelServer>(this.SERVER_URL + '/products/' + id);
 
 
 
